@@ -1,0 +1,233 @@
+
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:monospace}
+.wrap{background:#0d0d0d;border-radius:12px;padding:20px;min-height:480px;position:relative;overflow:hidden}
+.step{display:none;animation:fadeIn .4s ease}
+.step.active{display:block}
+@keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+.screen{background:#1a1a1a;border-radius:8px;border:1px solid #333;overflow:hidden}
+.titlebar{background:#2a2a2a;padding:8px 12px;display:flex;align-items:center;gap:8px;border-bottom:1px solid #333}
+.dot{width:10px;height:10px;border-radius:50%}
+.dot.r{background:#ff5f57}.dot.y{background:#febc2e}.dot.g{background:#28c840}
+.win-title{font-size:11px;color:#888;margin-left:8px;font-family:sans-serif}
+.chat-body{padding:14px;min-height:280px}
+.msg{margin-bottom:12px;font-family:sans-serif;font-size:13px}
+.msg.user{text-align:right}
+.bubble{display:inline-block;padding:8px 12px;border-radius:8px;max-width:85%;line-height:1.5;text-align:left}
+.bubble.u{background:#2d4a6b;color:#c8e0f8}
+.bubble.ai{background:#222;color:#d4d4d4;border:1px solid #333}
+.code-block{background:#111;border:1px solid #333;border-radius:6px;padding:12px;font-size:11px;color:#9cdcfe;line-height:1.7;overflow:hidden}
+.kw{color:#c586c0}.fn{color:#dcdcaa}.cm{color:#6a9955}.st{color:#ce9178}.num{color:#b5cea8}
+.ai-label{font-size:11px;color:#888;font-family:sans-serif;margin-bottom:4px;padding-left:2px}
+.progress{display:flex;gap:6px;justify-content:center;margin-bottom:14px}
+.pdot{width:8px;height:8px;border-radius:50%;background:#333;transition:background .3s}
+.pdot.on{background:#f97316}
+.step-label{font-family:sans-serif;font-size:11px;color:#888;text-align:center;margin-bottom:10px;letter-spacing:.5px;text-transform:uppercase}
+.nav{display:flex;gap:8px;justify-content:center;margin-top:14px}
+.btn{font-family:sans-serif;font-size:12px;padding:6px 14px;border-radius:6px;border:1px solid #444;background:transparent;color:#888;cursor:pointer}
+.btn:hover{background:#222;color:#ccc}
+.btn.play{background:#f97316;border-color:#f97316;color:#fff}
+.anac{padding:14px}
+.anac-header{font-family:sans-serif;font-size:13px;color:#ccc;margin-bottom:12px}
+.app-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+.app-card{background:#222;border:1px solid #333;border-radius:8px;padding:10px;text-align:center;font-family:sans-serif;font-size:11px;color:#999;cursor:pointer;transition:border-color .2s}
+.app-card.hi{border-color:#f97316;color:#f97316}
+.app-icon{font-size:20px;margin-bottom:4px}
+.vsc{padding:0}
+.sidebar{width:180px;background:#252526;border-right:1px solid #333;padding:10px;float:left;height:300px}
+.sidebar-title{font-size:10px;color:#bbb;font-family:sans-serif;margin-bottom:8px;text-transform:uppercase;letter-spacing:.5px}
+.file{font-size:11px;color:#9cdcfe;font-family:monospace;padding:3px 6px;border-radius:3px;cursor:pointer}
+.file.active-f{background:#094771}
+.editor{margin-left:180px;padding:12px;min-height:300px}
+.ln{color:#555;font-size:11px;margin-right:10px;display:inline-block;min-width:16px;text-align:right}
+.term{background:#0d0d0d;border-top:1px solid #333;padding:10px}
+.term-line{font-size:11px;color:#4ec9b0;line-height:1.8}
+.term-line.w{color:#ffcc02}.term-line.g{color:#4ec9b0}.term-line.dim{color:#555}
+.out-table{width:100%;border-collapse:collapse;font-size:11px;font-family:sans-serif}
+.out-table th{background:#1e3a5f;color:#9cdcfe;padding:6px 10px;text-align:left;font-weight:500}
+.out-table td{padding:5px 10px;color:#ccc;border-bottom:1px solid #222}
+.out-table tr:nth-child(even) td{background:#1a1a1a}
+.badge{display:inline-block;background:#1a3a1a;color:#4ec9b0;font-size:10px;font-family:sans-serif;padding:3px 8px;border-radius:4px;border:1px solid #2a4a2a}
+</style>
+
+<div class="wrap">
+<h2 class="sr-only" style="position:absolute;left:-9999px">Vibe coding workflow demo: prompt to Excel output in 6 steps</h2>
+
+<div class="progress" id="prog"></div>
+<div class="step-label" id="slabel">Step 1 of 6</div>
+
+<div class="step active" id="s1">
+<div class="screen">
+<div class="titlebar"><div class="dot r"></div><div class="dot y"></div><div class="dot g"></div><div class="win-title">Claude — claude.ai</div></div>
+<div class="chat-body">
+<div class="msg user"><div class="bubble u" id="prompt-text"></div></div>
+</div>
+</div>
+</div>
+
+<div class="step" id="s2">
+<div class="screen">
+<div class="titlebar"><div class="dot r"></div><div class="dot y"></div><div class="dot g"></div><div class="win-title">Claude — claude.ai</div></div>
+<div class="chat-body">
+<div class="msg user"><div class="bubble u" style="font-size:12px">I have 155 fund Excel files. Loop through each, find the management fees from the SCI sheet, and write all values into a summary file.</div></div>
+<div class="msg">
+<div class="ai-label">Claude</div>
+<div class="bubble ai" style="width:100%">
+<div style="font-family:sans-serif;font-size:12px;color:#d4d4d4;margin-bottom:8px">Here's a Python script that does exactly that:</div>
+<div class="code-block" id="code-out"></div>
+<div style="font-family:sans-serif;font-size:11px;color:#888;margin-top:8px">Save as <span style="color:#9cdcfe">extract_fees.py</span> and run from your fund folder.</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+
+<div class="step" id="s3">
+<div class="screen">
+<div class="titlebar"><div class="dot r"></div><div class="dot y"></div><div class="dot g"></div><div class="win-title">Anaconda Navigator</div></div>
+<div class="anac">
+<div class="anac-header">Home — base (root)</div>
+<div class="app-grid">
+<div class="app-card"><div class="app-icon">🔬</div>JupyterLab</div>
+<div class="app-card"><div class="app-icon">📓</div>Jupyter Notebook</div>
+<div class="app-card hi" id="vsc-card"><div class="app-icon">🔷</div>VS Code<br><span style="font-size:9px;color:#f97316">← Launch</span></div>
+<div class="app-card"><div class="app-icon">🕷</div>Spyder</div>
+</div>
+<div style="margin-top:14px;font-family:sans-serif;font-size:11px;color:#555;border-top:1px solid #222;padding-top:10px">Environments: base · python 3.11 · pandas 2.1 · openpyxl 3.1</div>
+</div>
+</div>
+</div>
+
+<div class="step" id="s4">
+<div class="screen">
+<div class="titlebar"><div class="dot r"></div><div class="dot y"></div><div class="dot g"></div><div class="win-title">extract_fees.py — VS Code</div></div>
+<div class="vsc">
+<div class="sidebar">
+<div class="sidebar-title">Explorer</div>
+<div class="file">📁 fund_reports/</div>
+<div class="file active-f" style="padding-left:18px">📄 extract_fees.py</div>
+<div class="file" style="padding-left:18px;color:#888">📄 config.xlsx</div>
+</div>
+<div class="editor">
+<div><span class="ln">1</span><span class="kw">import</span> <span class="fn">pandas</span> <span class="kw">as</span> pd</div>
+<div><span class="ln">2</span><span class="kw">import</span> <span class="fn">os</span>, <span class="fn">glob</span></div>
+<div><span class="ln">3</span></div>
+<div><span class="ln">4</span><span class="cm"># folder containing all fund files</span></div>
+<div><span class="ln">5</span>folder = <span class="st">"./fund_reports"</span></div>
+<div><span class="ln">6</span>results = []</div>
+<div><span class="ln">7</span></div>
+<div><span class="ln">8</span><span class="kw">for</span> file <span class="kw">in</span> <span class="fn">glob.glob</span>(folder + <span class="st">"/*.xlsx"</span>):</div>
+<div><span class="ln">9</span>&nbsp;&nbsp;wb = <span class="fn">pd.read_excel</span>(file, sheet_name=<span class="st">"SCI"</span>)</div>
+<div><span class="ln">10</span>&nbsp;&nbsp;fee_row = wb[wb[<span class="num">0</span>].str.contains(<span class="st">"Management fees"</span>)]</div>
+<div><span class="ln">11</span>&nbsp;&nbsp;results.<span class="fn">append</span>({<span class="st">"fund"</span>: <span class="fn">os.path.basename</span>(file), <span class="st">"fee"</span>: fee_row})</div>
+<div><span class="ln">12</span></div>
+<div><span class="ln">13</span><span class="fn">pd.DataFrame</span>(results).<span class="fn">to_excel</span>(<span class="st">"summary_fees.xlsx"</span>)</div>
+</div>
+<div class="term">
+<div class="term-line dim">TERMINAL — bash</div>
+<div class="term-line w">$ python extract_fees.py</div>
+</div>
+</div>
+</div>
+</div>
+
+<div class="step" id="s5">
+<div class="screen">
+<div class="titlebar"><div class="dot r"></div><div class="dot y"></div><div class="dot g"></div><div class="win-title">Terminal</div></div>
+<div style="padding:14px;min-height:260px">
+<div class="term-line w">$ python extract_fees.py</div>
+<div class="term-line dim" style="margin-top:4px" id="t1"></div>
+<div class="term-line dim" id="t2"></div>
+<div class="term-line dim" id="t3"></div>
+<div class="term-line dim" id="t4"></div>
+<div class="term-line g" id="t5"></div>
+<div class="term-line g" id="t6"></div>
+</div>
+</div>
+</div>
+
+<div class="step" id="s6">
+<div class="screen">
+<div class="titlebar"><div class="dot r"></div><div class="dot y"></div><div class="dot g"></div><div class="win-title">summary_fees.xlsx</div></div>
+<div style="padding:14px">
+<div style="font-family:sans-serif;font-size:11px;color:#888;margin-bottom:10px">Output: 155 funds extracted &nbsp;<span class="badge">Done in 4.2s</span></div>
+<table class="out-table">
+<tr><th>Fund</th><th>Management fees (curr yr)</th><th>Management fees (prior yr)</th></tr>
+<tr><td>CASH</td><td>$942,075</td><td>$312,288</td></tr>
+<tr><td>HSAV</td><td>$1,648,540</td><td>$1,919,825</td></tr>
+<tr><td>CBIL</td><td>$2,104,320</td><td>$1,876,540</td></tr>
+<tr><td>HMMJ</td><td>$388,210</td><td>$412,900</td></tr>
+<tr><td>HAB</td><td>$852,896</td><td>$924,622</td></tr>
+<tr><td style="color:#555">...</td><td style="color:#555">...</td><td style="color:#555">...</td></tr>
+</table>
+</div>
+</div>
+</div>
+
+<div class="nav">
+<button class="btn" id="prevBtn" onclick="move(-1)">← Prev</button>
+<button class="btn play" id="playBtn" onclick="togglePlay()">▶ Auto-play</button>
+<button class="btn" id="nextBtn" onclick="move(1)">Next →</button>
+</div>
+</div>
+
+<script>
+const labels=["Step 1 — Type the prompt","Step 2 — AI writes the code","Step 3 — Open Anaconda Navigator","Step 4 — Paste script in VS Code","Step 5 — Run the script","Step 6 — Excel output ready"];
+const total=6;let cur=1,playing=false,timer=null;
+
+const prompt="I have 155 fund Excel files. Loop through each, find the management fees from the SCI sheet, and write all values into a summary file.";
+const codeLines=[
+"<span class='kw'>import</span> pandas <span class='kw'>as</span> pd, os, glob",
+"",
+"results = []",
+"<span class='kw'>for</span> f <span class='kw'>in</span> <span class='fn'>glob.glob</span>(<span class='st'>\"./fund_reports/*.xlsx\"</span>):",
+"&nbsp;&nbsp;df = <span class='fn'>pd.read_excel</span>(f, sheet_name=<span class='st'>\"SCI\"</span>, header=<span class='kw'>None</span>)",
+"&nbsp;&nbsp;row = df[df[<span class='num'>0</span>].str.contains(<span class='st'>\"Management fees\"</span>, na=<span class='kw'>False</span>)]",
+"&nbsp;&nbsp;<span class='kw'>if not</span> row.empty:",
+"&nbsp;&nbsp;&nbsp;&nbsp;results.<span class='fn'>append</span>({<span class='st'>\"fund\"</span>: os.path.<span class='fn'>basename</span>(f),",
+"&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class='st'>\"curr\"</span>: row.iloc[<span class='num'>0</span>,<span class='num'>1</span>], <span class='st'>\"prior\"</span>: row.iloc[<span class='num'>0</span>,<span class='num'>2</span>]})",
+"",
+"<span class='fn'>pd.DataFrame</span>(results).<span class='fn'>to_excel</span>(<span class='st'>\"summary_fees.xlsx\"</span>, index=<span class='kw'>False</span>)",
+"<span class='fn'>print</span>(<span class='st'>\"Done.\"</span>)"
+];
+const termLines=["Processing CASH.xlsx...","Processing HSAV.xlsx...","Processing CBIL.xlsx...","Processing HMMJ.xlsx...","\u2713 155 files processed successfully","summary_fees.xlsx written."];
+
+function buildProg(){
+  const p=document.getElementById("prog");p.innerHTML="";
+  for(let i=1;i<=total;i++){const d=document.createElement("div");d.className="pdot"+(i===cur?" on":"");p.appendChild(d);}
+}
+function showStep(n){
+  document.querySelectorAll(".step").forEach(s=>s.classList.remove("active"));
+  document.getElementById("s"+n).classList.add("active");
+  document.getElementById("slabel").textContent=labels[n-1];
+  buildProg();
+  document.getElementById("prevBtn").style.opacity=n===1?"0.3":"1";
+  document.getElementById("nextBtn").style.opacity=n===total?"0.3":"1";
+  if(n===1)typePrompt();
+  if(n===2)typeCode();
+  if(n===5)typeTerminal();
+}
+function typePrompt(){
+  const el=document.getElementById("prompt-text");el.textContent="";
+  let i=0;const t=setInterval(()=>{el.textContent+=prompt[i++];if(i>=prompt.length)clearInterval(t);},28);
+}
+function typeCode(){
+  const el=document.getElementById("code-out");el.innerHTML="";
+  let li=0;
+  function nextLine(){if(li>=codeLines.length)return;el.innerHTML+=(li?"\n":"")+codeLines[li++];setTimeout(nextLine,90);}
+  nextLine();
+}
+function typeTerminal(){
+  const ids=["t1","t2","t3","t4","t5","t6"];
+  ids.forEach(id=>document.getElementById(id).textContent="");
+  ids.forEach((id,i)=>setTimeout(()=>{document.getElementById(id).textContent=termLines[i];},i*420+200));
+}
+function move(d){if(playing)stopPlay();const n=cur+d;if(n<1||n>total)return;cur=n;showStep(cur);}
+function togglePlay(){playing?stopPlay():startPlay();}
+function startPlay(){playing=true;document.getElementById("playBtn").textContent="⏸ Pause";step();}
+function step(){timer=setTimeout(()=>{if(cur<total){cur++;showStep(cur);step();}else{stopPlay();}},3200);}
+function stopPlay(){playing=false;clearTimeout(timer);document.getElementById("playBtn").textContent="▶ Auto-play";}
+
+buildProg();typePrompt();
+</script>
